@@ -1,6 +1,7 @@
 import requests
 import time
 
+
 # Get request
 def test_get_request():
     response = requests.get("https://jsonplaceholder.typicode.com/posts/1")
@@ -55,22 +56,6 @@ def test_title_in_chained_request():
 
 
 # Retry mechanism
-def test_retry_get_with_http_status_503():
-    import time
-    retries = 1
-    response = None
-    try:
-        for attempt in range(retries):
-            response = requests.get("https://httpbin.org/status/503")
-            if response.status_code == 200:
-                break
-            retries += 1
-            time.sleep(1)
-    except Exception as e:
-        if response is not None:
-            assert response.status_code == 503, e
-
-
 def test_retry_get_with_http_status_503():
     retries = 3
     response = None
