@@ -46,16 +46,16 @@ pipeline {
                 }
             }
 
-        stage('Publish Reports'){
+        stage('Publish Reports') {
             when {
                 expression {
                     return currentBuild.currentResult == 'SUCCESS'
-                    }
                 }
-            steps{
+            }
+            steps {
                 allure includeProperties: false,
-                       jdk: '',
-                       results: [[path: "${TEST_REPORT_DIR}/allure-results"]
+                    jdk: '',
+                    results: [[path: "${TEST_REPORT_DIR}/allure-results"]]
             }
         }
 
