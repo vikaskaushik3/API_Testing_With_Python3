@@ -69,5 +69,5 @@ pipeline {
                 body: "Check the build logs and report for details"
             }
         }
-
+    }
 }
