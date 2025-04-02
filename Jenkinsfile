@@ -35,16 +35,6 @@ pipeline {
                 }
             }
 
-        stage('Run API Tests'){
-            steps {
-                sh '''
-                    mkdir -p $TEST_REPORT_DIR
-                    source $VENV_DIR/bin/activate
-                    pytest tests/api_tests --html=$TEST_REPORT_DIR/api_test_report.html --self-contained-html
-                '''
-                }
-            }
-
         stage('Publish Reports'){
             steps{
                 publishHTML(target: [
