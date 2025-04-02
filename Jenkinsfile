@@ -10,16 +10,19 @@ pipeline {
     stages {
         stage('Checkout code'){
             steps {
-            checkout scmGit(branches: [[name: "*/master"]], extensions: [], userRemoteConfigs: [[url: 'https://github.com/vikaskaushik3/API_Testing_With_Python3.git']])
+            checkout scmGit(
+            branches: [[name: "*/master"]],
+            extensions: [],
+            userRemoteConfigs: [[url: 'https://github.com/vikaskaushik3/API_Testing_With_Python3.git']])
             }
         }
 
         stage('Setup Python Environment'){
             steps{
                 sh '''
-                    python3 -m venv $VENV_DIR
-                    source $VENV_DIR/bin/activate
-                    pip install --upgrade pip
+                    python3 -m venv $VENV_DIR && \
+                    source $VENV_DIR/bin/activate && \
+                    pip install --upgrade pip && \
                     pip install -r requirements.txt
                 '''
                 }
@@ -27,21 +30,32 @@ pipeline {
 
         stage('Run API Tests'){
             steps{
-                sh '''
-                    mkdir -p $TEST_REPORT_DIR
-                    source $VENV_DIR/bin/activate
-                    pytest --html=$TEST_REPORT_DIR/api_test_report.html --self-contained-html
-                '''
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE'){
+                    sh '''
+                        source $VENV_DIR/bin/activate && \
+                        mkdir -p $TEST_REPORT_DIR && \
+                        pytest --alluredir=$TEST_REPORT_DIR/allure-results
+                    '''
+                  }
+                script {
+                    if (currentBuild.result == 'FAILURE') {
+                        echo "Test execution failed. Marking current build as failed"
+                        currentBuild.currentResult = 'FAILURE'
+                        }
+                    }
                 }
             }
 
         stage('Publish Reports'){
+            when {
+                expression {
+                    return currentBuild.currentResult == 'SUCCESS'
+                    }
+                }
             steps{
-                publishHTML(target: [
-                    reportDir: "${TEST_REPORT_DIR}",
-                    reportFiles: "api_test_report.html",
-                    reportName: "API Test Reports"])
-              }
+                allure includeProperties: false,
+                       jdk: '',
+                       results: [[path: "${TEST_REPORT_DIR}/allure-results"]
             }
         }
 
