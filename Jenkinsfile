@@ -8,6 +8,16 @@ pipeline {
     }
 
     stages {
+
+        stage('Start Info') {
+            steps {
+                script {
+                    def startTime = new Date()
+                    echo "Pipeline started at: ${startTime}"
+                }
+            }
+        }
+
         stage('Checkout code') {
             steps {
                 checkout scmGit(
