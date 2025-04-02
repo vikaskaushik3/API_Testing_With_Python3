@@ -56,7 +56,9 @@ pipeline {
                 allure includeProperties: false,
                     jdk: '',
                     results: [[path: "${TEST_REPORT_DIR}/allure-results"]]
+                }
             }
+        }
         post {
             always {
                 archiveArtifacts artifacts:"${TEST_REPORT_DIR}/*.html", fingerprint: true
@@ -65,7 +67,7 @@ pipeline {
                 mail to: 'vikaskaushik166@gmail.com',
                     subject: "Jenkins Build Failed: ${env.JOB_NAME}",
                     body: "Check the build logs and report for details"
-            }
         }
-    }
+     }
+  }
 }
